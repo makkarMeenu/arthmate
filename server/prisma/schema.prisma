@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  name     String    @db.VarChar(255)
+  username String
+  email    String    @unique
+  address  String
+  phone    String
+  website  String
+  Comment  Comment[]
+  Post     Post[]
+  Album    Album[]
+  Photo    Photo[]
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  commentId Int
+  Comment   Comment[]
+  title     String?
+  body      String?
+
+}
+
+model Comment {
+  id     Int     @id @default(autoincrement())
+  name   String  @db.VarChar(255)
+  postId Int     @unique
+  post   Post    @relation(fields: [postId], references: [id])
+  userId Int
+  user   User    @relation(fields: [userId], references: [id])
+  body   String?
+
+}
+
+model Album {
+  id      Int     @id @default(autoincrement())
+  userId  Int     @unique
+  User    User    @relation(fields: [userId], references: [id])
+  title   String
+  photoId Int     @unique
+  Photo   Photo[]
+}
+
+model Photo {
+  id           Int    @id @default(autoincrement())
+  albumId      Int    @unique
+  album        Album  @relation(fields: [albumId], references: [id])
+  title        String
+  url          String
+  thumbnailUrl String
+  user         User?  @relation(fields: [userId], references: [id])
+  userId       Int?
+}
